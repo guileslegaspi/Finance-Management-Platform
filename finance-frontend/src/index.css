@@ -1,0 +1,26 @@
+:root {
+    --primary: #7c3aed;
+    --primary-dark: #5b21b6;
+    --background: #f8f7fc;
+    --surface: #ffffff;
+    --text: #1e293b;
+    --text-secondary: #64748b;
+    --border: #e2e8f0;
+    --positive: #059669;
+    --negative: #dc2626;
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: var(--text);
+    background: var(--background);
+}
+
+body {
+    margin: 0;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+a {
+    color: inherit;
+}
