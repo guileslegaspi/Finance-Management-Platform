@@ -18,7 +18,7 @@ namespace Finance_Management_Platform.Services
 		public async Task<List<Account>> GetAccountsAsync(int userId) 
 		{
 			return await _context.Accounts
-				.Where(x => x.Id == userId)
+				.Where(x => x.UserId == userId)
 				.ToListAsync();
 		}
 
