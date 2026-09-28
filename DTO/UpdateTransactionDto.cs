@@ -1,14 +1,20 @@
-﻿namespace Finance_Management_Platform.DTO
+﻿using Finance_Management_Platform.Entities;
+
+namespace Finance_Management_Platform.DTO
 {
-	public class CreateDto
+	public class UpdateTransactionDto
 	{
 		public DateTime Date { get; set; }
+
+		public TransactionType Type { get; set; }
 
 		public string Payee { get; set; } = string.Empty;
 
 		public string Description { get; set; } = string.Empty;
 
 		public decimal Amount { get; set; }
+
+		public int AccountId { get; set; }
 
 		public string? ReferenceNumber { get; set; }
 

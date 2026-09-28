@@ -2,12 +2,14 @@
 
 namespace Finance_Management_Platform.Entities
 {
-	[Table("Expenses")]
-	public class Expense
+	[Table("Transactions")]
+	public class Transaction
 	{
 		public int Id { get; set; }
 
 		public DateTime Date { get; set; }
+
+		public TransactionType Type { get; set; }
 
 		public string Payee { get; set; } = string.Empty;
 
@@ -23,7 +25,8 @@ namespace Finance_Management_Platform.Entities
 
 		public DateTime? UpdatedAt { get; set; }
 
-		
+		public int AccountId { get; set; }
+		public Account Account { get; set; } = null!;
 		public int UserId { get; set; }
 		public User User { get; set; } = null!;
 	}
