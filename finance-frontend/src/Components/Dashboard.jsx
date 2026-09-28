@@ -1,47 +1,37 @@
-﻿import Sidebar from './Sidebar'
-import '../App.css'
+﻿import '../App.css'
 import SummaryCard from './SummaryCard'
 import FinancialOverview from './FinancialOverview'
 
-
 function Dashboard() {
     return (
-        <div className="app">
-            <Sidebar />
+        <>
+            <h1>Finance Management ni Daisy Rey :*</h1>
+            <p>Welcome to your financial dashboard.</p>
 
+            <div className="summary-grid">
+                <SummaryCard
+                    title="Total Balance"
+                    value="₱125,000"
+                />
 
-            <main className="main-content">
-                <h1>Finance Management ni Daisy Rey :*</h1>
-                <p>Welcome to your financial dashboard.</p>
+                <SummaryCard
+                    title="Savings"
+                    value="₱80,000"
+                />
 
-                <div className="summary-grid">
-                    <SummaryCard
-                        title="Total Balance"
-                        value="₱125,000"
-                    />
+                <SummaryCard
+                    title="Income"
+                    value="₱45000"
+                />
 
-                    <SummaryCard
-                        title="Savings"
-                        value="₱80,000"
-                    />
+                <SummaryCard
+                    title="Expense"
+                    value="₱18500"
+                />
+            </div>
 
-                    <SummaryCard
-                        title="Income"
-                        value="₱45000"
-                    />
-
-                    <SummaryCard
-                        title="Expense"
-                        value="₱18500"
-                    />
-
-
-                </div>
-                <FinancialOverview />
-            </main>
-
-
-        </div>
+            <FinancialOverview />
+        </>
     )
 }
 

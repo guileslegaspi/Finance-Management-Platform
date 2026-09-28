@@ -11,5 +11,7 @@ namespace Finance_Management_Platform.Data
 		}
 
 		public DbSet<User> Users { get; set; }
+
+		public DbSet<Expense> Expenses { get; set; }
 	}
 }

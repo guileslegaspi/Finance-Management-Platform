@@ -1,6 +1,10 @@
-﻿function Sidebar() {
+﻿
+import { NavLink } from 'react-router-dom';
+
+function Sidebar() {
     return (
         <aside className="sidebar">
+
             <div className="sidebar-brand">
                 <div className="brand-icon">F</div>
 
@@ -13,35 +17,41 @@
             <nav>
                 <p className="nav-label">MAIN MENU</p>
 
-                <a href="/dashboard" className="active">
+                <NavLink to="/dashboard">
                     Dashboard
-                </a>
+                </NavLink>
 
-                <a href="/accounts">
+                <NavLink to="/expenses">
+                    Expenses
+                </NavLink>
+
+                <NavLink to="/accounts">
                     Accounts
-                </a>
+                </NavLink>
 
-                <a href="/transactions">
+                <NavLink to="/transactions">
                     Transactions
-                </a>
+                </NavLink>
 
-                <a href="/reports">
+                <NavLink to="/reports">
                     Reports
-                </a>
+                </NavLink>
 
                 <p className="nav-label">SYSTEM</p>
 
-                <a href="/settings">
+                <NavLink to="/settings">
                     Settings
-                </a>
+                </NavLink>
             </nav>
 
             <div className="sidebar-footer">
                 <strong>Finance Platform</strong>
                 <span>Personal Finance</span>
             </div>
+
         </aside>
-    )
+    );
 }
 
-export default Sidebar
+export default Sidebar;
+
