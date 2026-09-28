@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Finance_Management_Platform.Services
 {
-	public class AccountServices : IAccountService
+	public class AccountService : IAccountService
 	{
 		private readonly ApplicationDbContext _context;
 
-		public AccountServices(ApplicationDbContext context) 
+		public AccountService(ApplicationDbContext context) 
 		{
 			_context = context;
 		}

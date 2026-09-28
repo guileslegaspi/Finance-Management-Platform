@@ -15,7 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<ITransactionService, TransactionService>();
-builder.Services.AddScoped<IAccountService, AccountServices>();
+builder.Services.AddScoped<IAccountService, AccountService>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
