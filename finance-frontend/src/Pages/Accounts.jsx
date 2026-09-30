@@ -1,5 +1,4 @@
-﻿
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import AccountModal from "../Components/AccountModal";
 import "../styles/Accounts.css";
 
@@ -9,6 +8,14 @@ function Accounts() {
     const [showModal, setShowModal] = useState(false);
     const [refreshKey, setRefreshKey] = useState(0);
     const [openMenuId, setOpenMenuId] = useState(null);
+    const [selectedAccount, setSelectedAccount] = useState(null);
+
+    const accountTypeLabels = {
+        0: "Cash",
+        1: "Bank",
+        2: "E-Wallet",
+        3: "Credit Card"
+    };
 
     useEffect(() => {
         async function loadAccounts() {
@@ -19,7 +26,7 @@ function Accounts() {
                     "https://localhost:7012/api/Accounts",
                     {
                         headers: {
-                            Authorization: `Bearer ${ token } `
+                            Authorization: `Bearer ${token}`
                         }
                     }
                 );
@@ -41,6 +48,50 @@ function Accounts() {
         loadAccounts();
     }, [refreshKey]);
 
+    const handleEdit = (account) => {
+        setSelectedAccount(account);
+        setShowModal(true);
+        setOpenMenuId(null);
+    };
+
+    const handleDelete = async (id) => {
+        const confirmed = window.confirm(
+            "Are you sure you want to delete this account?"
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem("token");
+
+            const response = await fetch(
+                `https://localhost:7012/api/Accounts/${id}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to delete account.");
+            }
+
+            setRefreshKey((value) => value + 1);
+            setOpenMenuId(null);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const handleAdd = () => {
+        setSelectedAccount(null);
+        setShowModal(true);
+    };
+
     return (
         <div className="accounts-page">
             <div className="page-header">
@@ -49,7 +100,7 @@ function Accounts() {
                     <p>Manage your financial accounts.</p>
                 </div>
 
-                <button onClick={() => setShowModal(true)}>
+                <button onClick={handleAdd}>
                     + Add Account
                 </button>
             </div>
@@ -59,19 +110,23 @@ function Accounts() {
             ) : accounts.length === 0 ? (
                 <div className="empty-state">
                     <h2>No accounts yet</h2>
+
                     <p>
                         Add your first financial account to start
                         tracking your money.
                     </p>
 
-                    <button onClick={() => setShowModal(true)}>
+                    <button onClick={handleAdd}>
                         + Add Account
                     </button>
                 </div>
             ) : (
                 <div className="accounts-grid">
                     {accounts.map((account) => (
-                        <div className="account-card" key={account.id}>
+                        <div
+                            className="account-card"
+                            key={account.id}
+                        >
                             <div className="account-menu">
                                 <button
                                     type="button"
@@ -89,11 +144,21 @@ function Accounts() {
 
                                 {openMenuId === account.id && (
                                     <div className="account-menu-dropdown">
-                                        <button type="button">
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                handleEdit(account)
+                                            }
+                                        >
                                             Edit
                                         </button>
 
-                                        <button type="button">
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                handleDelete(account.id)
+                                            }
+                                        >
                                             Delete
                                         </button>
                                     </div>
@@ -103,7 +168,10 @@ function Accounts() {
                             <div className="account-card-header">
                                 <div>
                                     <h2>{account.name}</h2>
-                                    <p>{account.accountType}</p>
+
+                                    <p>
+                                        {accountTypeLabels[account.type]}
+                                    </p>
                                 </div>
                             </div>
 
@@ -117,9 +185,14 @@ function Accounts() {
 
             {showModal && (
                 <AccountModal
-                    onClose={() => setShowModal(false)}
-                    onAccountCreated={() => {
+                    account={selectedAccount}
+                    onClose={() => {
                         setShowModal(false);
+                        setSelectedAccount(null);
+                    }}
+                    onAccountSaved={() => {
+                        setShowModal(false);
+                        setSelectedAccount(null);
                         setRefreshKey((value) => value + 1);
                     }}
                 />
@@ -129,6 +202,3 @@ function Accounts() {
 }
 
 export default Accounts;
-
-
-

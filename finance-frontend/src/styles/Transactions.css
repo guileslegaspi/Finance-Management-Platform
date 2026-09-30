@@ -1,11 +1,12 @@
-﻿```css
-/* =========================
-   Expenses Page
+﻿/* =========================
+   Transactions Page
    ========================= */
-.expenses-page {
+
+.transactions-page {
     padding: 32px;
     min-height: 100vh;
 }
+
 
 /* =========================
    Page Header
@@ -71,14 +72,14 @@
    Toolbar
    ========================= */
 
-.expense-toolbar {
+.transaction-toolbar {
     display: flex;
     gap: 12px;
     margin-bottom: 18px;
 }
 
     .search-input,
-    .expense-toolbar select {
+    .transaction-toolbar select {
         height: 40px;
         border: 1px solid #ddd;
         border-radius: 8px;
@@ -91,12 +92,12 @@
     width: 280px;
 }
 
-.expense-toolbar select {
+.transaction-toolbar select {
     min-width: 140px;
 }
 
     .search-input:focus,
-    .expense-toolbar select:focus,
+    .transaction-toolbar select:focus,
     .form-group input:focus,
     .form-group textarea:focus {
         outline: none;
@@ -105,26 +106,26 @@
 
 
 /* =========================
-   Expense Table
+   Transaction Table
    ========================= */
 
-.expense-table-container {
+.transaction-table-container {
     background: white;
     border: 1px solid #e5e5e5;
     border-radius: 12px;
     overflow: hidden;
 }
 
-.expense-table {
+.transaction-table {
     width: 100%;
     border-collapse: collapse;
 }
 
-    .expense-table thead {
+    .transaction-table thead {
         background: #f7f7f7;
     }
 
-    .expense-table th {
+    .transaction-table th {
         text-align: left;
         padding: 14px 18px;
         font-size: 13px;
@@ -133,30 +134,30 @@
         border-bottom: 1px solid #e5e5e5;
     }
 
-    .expense-table td {
+    .transaction-table td {
         padding: 16px 18px;
         border-bottom: 1px solid #eee;
         font-size: 14px;
     }
 
-    .expense-table tbody tr {
+    .transaction-table tbody tr {
         transition: background 0.15s ease;
     }
 
-        .expense-table tbody tr:hover {
+        .transaction-table tbody tr:hover {
             background: #fafafa;
         }
 
-        .expense-table tbody tr:last-child td {
+        .transaction-table tbody tr:last-child td {
             border-bottom: none;
         }
 
 
 /* =========================
-   Expense Actions
+   Transaction Actions
    ========================= */
 
-.expense-actions {
+.transaction-actions {
     display: flex;
     gap: 7px;
 }
@@ -226,10 +227,10 @@
 
 
 /* =========================
-   Expense Modal
+   Transaction Modal
    ========================= */
 
-.expense-modal {
+.transaction-modal {
     width: 500px;
     max-width: calc(100% - 32px);
     max-height: 90vh;
@@ -248,4 +249,6 @@
 
     to {
         opacity: 1;
-        transform: translate ```
+        transform: translateY(0) scale(1);
+    }
+}

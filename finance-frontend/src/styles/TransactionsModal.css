@@ -1,5 +1,4 @@
-﻿
-.modal-overlay {
+﻿.modal-overlay {
     position: fixed;
     inset: 0;
     display: flex;
@@ -10,7 +9,7 @@
     z-index: 1000;
 }
 
-.expense-modal {
+.transaction-modal {
     width: 560px;
     max-width: 100%;
     max-height: 90vh;
@@ -36,8 +35,6 @@
         transform: translateY(0) scale(1);
     }
 }
-
-
 
 
 .modal-header {
@@ -74,8 +71,6 @@
 }
 
 
-
-
 .close-button {
     width: 32px;
     height: 32px;
@@ -94,11 +89,10 @@
 }
 
 
-.close-button:hover {
-    background: #f3f3f3;
-    color: #222222;
-}
-
+    .close-button:hover {
+        background: #f3f3f3;
+        color: #222222;
+    }
 
 
 .modal-body {
@@ -106,11 +100,13 @@
     overflow-y: auto;
 }
 
+
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 16px;
 }
+
 
 .form-group {
     display: flex;
@@ -120,49 +116,46 @@
 }
 
 
-.form-group label {
-    color: #444444;
-    font-size: 13px;
-    font-weight: 600;
-}
+    .form-group label {
+        color: #444444;
+        font-size: 13px;
+        font-weight: 600;
+    }
 
 
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 11px 12px;
+        border: 1px solid #dddddd;
+        border-radius: 8px;
+        background: white;
+        color: #222222;
+        font-family: inherit;
+        font-size: 14px;
+        transition: 0.2s ease;
+    }
 
 
-.form-group input,
-.form-group textarea {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 11px 12px;
-    border: 1px solid #dddddd;
-    border-radius: 8px;
-    background: white;
-    color: #222222;
-    font-family: inherit;
-    font-size: 14px;
-    transition: 0.2s ease;
-}
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #888888;
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.04);
+        }
 
 
-.form-group input:focus,
-.form-group textarea:focus {
-    outline: none;
-    border-color: #888888;
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.04);
-}
+    .form-group textarea {
+        min-height: 90px;
+        resize: vertical;
+    }
 
 
-.form-group textarea {
-    min-height: 90px;
-    resize: vertical;
-}
-
-
-.form-group input::placeholder,
-.form-group textarea::placeholder {
-    color: #aaaaaa;
-}
-
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #aaaaaa;
+        }
 
 
 .amount-input {
@@ -175,26 +168,24 @@
 }
 
 
-.amount-input span {
-    padding-left: 12px;
-    color: #777777;
-    font-size: 14px;
-    font-weight: 600;
-}
+    .amount-input span {
+        padding-left: 12px;
+        color: #777777;
+        font-size: 14px;
+        font-weight: 600;
+    }
 
 
-.amount-input input {
-    border: none;
-    border-radius: 0;
-    box-shadow: none;
-}
+    .amount-input input {
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+    }
 
 
-.amount-input input:focus {
-    box-shadow: none;
-}
-
-
+        .amount-input input:focus {
+            box-shadow: none;
+        }
 
 
 .view-value {
@@ -223,9 +214,7 @@
 }
 
 
-
-
-.expense-metadata {
+.transaction-metadata {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 16px;
@@ -235,28 +224,27 @@
 }
 
 
-.expense-metadata div {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
+    .transaction-metadata div {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
 
 
-.expense-metadata span {
-    color: #999999;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
+    .transaction-metadata span {
+        color: #999999;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
 
 
-.expense-metadata strong {
-    color: #555555;
-    font-size: 13px;
-    font-weight: 500;
-}
-
+    .transaction-metadata strong {
+        color: #555555;
+        font-size: 13px;
+        font-weight: 500;
+    }
 
 
 .modal-footer {
@@ -270,16 +258,15 @@
 }
 
 
-
-.modal-footer .primary-button,
-.modal-footer .secondary-button {
-    padding: 10px 16px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.2s ease;
-}
+    .modal-footer .primary-button,
+    .modal-footer .secondary-button {
+        padding: 10px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
 
 
 @media (max-width: 600px) {
@@ -289,7 +276,7 @@
     }
 
 
-    .expense-modal {
+    .transaction-modal {
         max-height: 94vh;
     }
 
@@ -315,7 +302,7 @@
     }
 
 
-    .expense-metadata {
+    .transaction-metadata {
         grid-template-columns: 1fr;
     }
 }

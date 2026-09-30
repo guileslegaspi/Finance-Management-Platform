@@ -1,10 +1,10 @@
 ﻿import { useState } from 'react';
-import '../styles/Expenses.css';
-import TransactionModal from '../Components/TransactionModal';
+import '../styles/Transactions.css';
+import TransactionModal from '../Components/TransactionsModal';
 
-export default function Expenses() {
+export default function Transactions() {
 
-    const [expenses, setExpenses] = useState([
+    const [transactions, setTransactions] = useState([
         {
             id: 1,
             date: '2026-09-27',
@@ -31,65 +31,68 @@ export default function Expenses() {
 
 
     const [modalMode, setModalMode] = useState(null);
-    const [selectedExpense, setSelectedExpense] = useState(null);
+    const [selectedTransaction, setSelectedTransaction] = useState(null);
 
 
     function openCreateModal() {
-        setSelectedExpense(null);
+        setSelectedTransaction(null);
         setModalMode('create');
     }
 
 
-    function openViewModal(expense) {
-        setSelectedExpense(expense);
+    function openViewModal(transaction) {
+        setSelectedTransaction(transaction);
         setModalMode('view');
     }
 
 
-    function openEditModal(expense) {
-        setSelectedExpense(expense);
+    function openEditModal(transaction) {
+        setSelectedTransaction(transaction);
         setModalMode('edit');
     }
 
 
     function closeModal() {
         setModalMode(null);
-        setSelectedExpense(null);
+        setSelectedTransaction(null);
     }
 
 
-    function deleteExpense(id) {
-        setExpenses(
-            expenses.filter(expense => expense.id !== id)
+    function deleteTransaction(id) {
+        setTransactions(
+            transactions.filter(
+                transaction => transaction.id !== id
+            )
         );
     }
 
 
     return (
-        <div className="expenses-page">
+        <div className="transactions-page">
 
             <div className="page-header">
 
                 <div>
-                    <h1>Expenses</h1>
-                    <p>View and manage your expenses.</p>
+                    <h1>Transactions</h1>
+                    <p>View and manage your transactions.</p>
                 </div>
 
                 <button
                     className="primary-button"
                     onClick={openCreateModal}
                 >
-                    + Add Expense
+                    + Add Transaction
                 </button>
 
             </div>
 
-            <div className="expense-toolbar">
+
+            <div className="transaction-toolbar">
 
                 <input
                     type="text"
                     className="search-input"
-                    placeholder="Search expenses..."
+                    placeholder="Search transactions..."
                 />
 
                 <select>
@@ -101,9 +104,10 @@ export default function Expenses() {
 
             </div>
 
-            <div className="expense-table-container">
 
-                <table className="expense-table">
+            <div className="transaction-table-container">
+
+                <table className="transaction-table">
 
                     <thead>
                         <tr>
@@ -118,24 +122,24 @@ export default function Expenses() {
 
                     <tbody>
 
-                        {expenses.map(expense => (
+                        {transactions.map(transaction => (
 
-                            <tr key={expense.id}>
+                            <tr key={transaction.id}>
 
                                 <td>
-                                    {expense.date}
+                                    {transaction.date}
                                 </td>
 
                                 <td>
-                                    {expense.payee}
+                                    {transaction.payee}
                                 </td>
 
                                 <td>
-                                    {expense.description}
+                                    {transaction.description}
                                 </td>
 
                                 <td>
-                                    ₱{expense.amount.toLocaleString(
+                                    ₱{transaction.amount.toLocaleString(
                                         'en-PH',
                                         {
                                             minimumFractionDigits: 2
@@ -144,12 +148,12 @@ export default function Expenses() {
                                 </td>
 
 
-                                <td className="expense-actions">
+                                <td className="transaction-actions">
 
                                     <button
                                         className="view-button"
                                         onClick={() =>
-                                            openViewModal(expense)
+                                            openViewModal(transaction)
                                         }
                                     >
                                         View
@@ -159,7 +163,7 @@ export default function Expenses() {
                                     <button
                                         className="edit-button"
                                         onClick={() =>
-                                            openEditModal(expense)
+                                            openEditModal(transaction)
                                         }
                                     >
                                         Edit
@@ -169,7 +173,9 @@ export default function Expenses() {
                                     <button
                                         className="delete-button"
                                         onClick={() =>
-                                            deleteExpense(expense.id)
+                                            deleteTransaction(
+                                                transaction.id
+                                            )
                                         }
                                     >
                                         Delete
@@ -185,14 +191,15 @@ export default function Expenses() {
 
                 </table>
 
-                {expenses.length === 0 && (
+
+                {transactions.length === 0 && (
                     <div className="empty-state">
 
-                        <h3>No expenses yet</h3>
+                        <h3>No transactions yet</h3>
 
                         <p>
-                            Add your first expense to start
-                            tracking spending.
+                            Add your first transaction to start
+                            tracking your finances.
                         </p>
 
                     </div>
@@ -200,10 +207,11 @@ export default function Expenses() {
 
             </div>
 
+
             {modalMode && (
                 <TransactionModal
                     mode={modalMode}
-                    expense={selectedExpense}
+                    transaction={selectedTransaction}
                     onClose={closeModal}
                     onEdit={openEditModal}
                 />

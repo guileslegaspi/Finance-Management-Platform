@@ -1,11 +1,16 @@
-﻿
-import { useState } from "react";
+﻿import { useState } from "react";
 import "../styles/AccountModal.css";
 
-function AccountModal({ onClose, onAccountCreated }) {
-    const [name, setName] = useState("");
-    const [accountType, setAccountType] = useState("Cash");
-    const [balance, setBalance] = useState("");
+function AccountModal({ account, onClose, onAccountSaved }) {
+    const [name, setName] = useState(account?.name ?? "");
+
+    const [accountType, setAccountType] = useState(
+        account?.type?.toString() ?? "0"
+    );
+
+    const [balance, setBalance] = useState(
+        account?.balance?.toString() ?? ""
+    );
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -13,27 +18,36 @@ function AccountModal({ onClose, onAccountCreated }) {
         try {
             const token = localStorage.getItem("token");
 
-            const response = await fetch(
-                "https://localhost:7012/api/Accounts",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${ token } `
-                    },
-                    body: JSON.stringify({
-                        name: name,
-                        accountType: accountType,
-                        balance: Number(balance)
-                    })
-                }
-            );
+            const isEditing = Boolean(account);
+
+            const url = isEditing
+                ? `https://localhost:7012/api/Accounts/${account.id}`
+                : "https://localhost:7012/api/Accounts";
+
+            const method = isEditing ? "PUT" : "POST";
+
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    name: name,
+                    type: Number(accountType),
+                    balance: Number(balance)
+                })
+            });
 
             if (!response.ok) {
-                throw new Error("Failed to create account.");
+                throw new Error(
+                    isEditing
+                        ? "Failed to update account."
+                        : "Failed to create account."
+                );
             }
 
-            onAccountCreated();
+            onAccountSaved();
         } catch (error) {
             console.error(error);
         }
@@ -42,10 +56,20 @@ function AccountModal({ onClose, onAccountCreated }) {
     return (
         <div className="account-modal-overlay">
             <div className="account-modal">
+
                 <div className="account-modal-header">
                     <div>
-                        <h2>Add Account</h2>
-                        <p>Add a financial account to your profile.</p>
+                        <h2>
+                            {account
+                                ? "Edit Account"
+                                : "Add Account"}
+                        </h2>
+
+                        <p>
+                            {account
+                                ? "Update your financial account details."
+                                : "Add a financial account to your profile."}
+                        </p>
                     </div>
 
                     <button
@@ -58,6 +82,7 @@ function AccountModal({ onClose, onAccountCreated }) {
                 </div>
 
                 <form onSubmit={handleSubmit}>
+
                     <div className="form-group">
                         <label htmlFor="accountName">
                             Account Name
@@ -68,7 +93,10 @@ function AccountModal({ onClose, onAccountCreated }) {
                             type="text"
                             placeholder="e.g. BPI Savings"
                             value={name}
-                            onChange={(event) => setName(event.target.value)}
+                            onChange={(event) =>
+                                setName(event.target.value)
+                            }
+                            required
                         />
                     </div>
 
@@ -84,10 +112,21 @@ function AccountModal({ onClose, onAccountCreated }) {
                                 setAccountType(event.target.value)
                             }
                         >
-                            <option value="Cash">Cash</option>
-                            <option value="Bank">Bank</option>
-                            <option value="EWallet">E-Wallet</option>
-                            <option value="CreditCard">Credit Card</option>
+                            <option value="0">
+                                Cash
+                            </option>
+
+                            <option value="1">
+                                Bank
+                            </option>
+
+                            <option value="2">
+                                E-Wallet
+                            </option>
+
+                            <option value="3">
+                                Credit Card
+                            </option>
                         </select>
                     </div>
 
@@ -105,10 +144,12 @@ function AccountModal({ onClose, onAccountCreated }) {
                             onChange={(event) =>
                                 setBalance(event.target.value)
                             }
+                            required
                         />
                     </div>
 
                     <div className="account-modal-actions">
+
                         <button
                             type="button"
                             className="cancel-button"
@@ -121,9 +162,13 @@ function AccountModal({ onClose, onAccountCreated }) {
                             type="submit"
                             className="create-button"
                         >
-                            Create Account
+                            {account
+                                ? "Save Changes"
+                                : "Create Account"}
                         </button>
+
                     </div>
+
                 </form>
             </div>
         </div>
@@ -131,4 +176,3 @@ function AccountModal({ onClose, onAccountCreated }) {
 }
 
 export default AccountModal;
-

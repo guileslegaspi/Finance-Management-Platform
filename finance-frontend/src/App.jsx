@@ -4,7 +4,7 @@ import Login from './Pages/Login'
 import Register from './Pages/Register'
 import Dashboard from './Components/Dashboard'
 import Layout from './Components/Layout'
-import Transaction from './Pages/Transaction'
+import Transactions from './Pages/Transactions'
 import Accounts from "./Pages/Accounts"
 
 function App() {
@@ -21,7 +21,7 @@ function App() {
                 <Route element={<Layout />}>
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/accounts" element={<Accounts />} />
-                    <Route path="/transaction" element={<Transaction />} />
+                    <Route path="/transactions" element={<Transactions />} />
                 </Route>
 
             </Routes>
