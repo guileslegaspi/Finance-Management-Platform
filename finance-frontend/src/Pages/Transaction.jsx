@@ -1,6 +1,6 @@
 ﻿import { useState } from 'react';
 import '../styles/Expenses.css';
-import ExpenseModal from '../Components/ExpenseModal';
+import TransactionModal from '../Components/TransactionModal';
 
 export default function Expenses() {
 
@@ -201,7 +201,7 @@ export default function Expenses() {
             </div>
 
             {modalMode && (
-                <ExpenseModal
+                <TransactionModal
                     mode={modalMode}
                     expense={selectedExpense}
                     onClose={closeModal}

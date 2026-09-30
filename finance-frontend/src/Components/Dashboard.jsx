@@ -5,7 +5,7 @@ import FinancialOverview from './FinancialOverview'
 function Dashboard() {
     return (
         <>
-            <h1>Finance Management ni Daisy Rey :*</h1>
+            <h1>Finance Management</h1>
             <p>Welcome to your financial dashboard.</p>
 
             <div className="summary-grid">
