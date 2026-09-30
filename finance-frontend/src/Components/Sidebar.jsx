@@ -21,10 +21,6 @@ function Sidebar() {
                     Dashboard
                 </NavLink>
 
-                <NavLink to="/expenses">
-                    Expenses
-                </NavLink>
-
                 <NavLink to="/accounts">
                     Accounts
                 </NavLink>

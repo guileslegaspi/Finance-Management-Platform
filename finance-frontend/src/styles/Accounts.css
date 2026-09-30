@@ -1,0 +1,180 @@
+﻿
+.accounts-page {
+    padding: 32px;
+}
+
+.accounts-page .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.accounts-page .page-header h1 {
+    margin: 0;
+    font-size: 28px;
+    color: var(--text);
+}
+
+.accounts-page .page-header p {
+    margin: 6px 0 0;
+    color: var(--text-secondary);
+}
+
+.accounts-page .page-header button,
+.empty-state button {
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 11px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.accounts-page .page-header button:hover,
+.empty-state button:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+.accounts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.account-card {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+    .account-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+
+.account-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.account-card-header h2 {
+    margin: 0;
+    font-size: 18px;
+    color: var(--text);
+}
+
+.account-card-header p {
+    margin: 5px 0 0;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.account-balance {
+    margin-top: 28px;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.account-menu {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+}
+
+.account-menu-button {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.account-menu-button:hover {
+    background: var(--background);
+    color: var(--text);
+}
+
+.account-menu-dropdown {
+    position: absolute;
+    top: 38px;
+    right: 0;
+    min-width: 120px;
+    padding: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+    z-index: 10;
+}
+
+.account-menu-dropdown button {
+    display: block;
+    width: 100%;
+    padding: 9px 10px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text);
+    text-align: left;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.account-menu-dropdown button:hover {
+    background: var(--background);
+}
+
+.account-menu-dropdown button:last-child {
+    color: var(--negative);
+}
+
+.account-menu-dropdown button:last-child:hover {
+    background: var(--background);
+    color: var(--negative);
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 320px;
+    padding: 40px;
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+    text-align: center;
+}
+
+.empty-state h2 {
+    margin: 0 0 8px;
+    color: var(--text);
+    font-size: 20px;
+}
+
+.empty-state p {
+    max-width: 420px;
+    margin: 0 0 22px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+

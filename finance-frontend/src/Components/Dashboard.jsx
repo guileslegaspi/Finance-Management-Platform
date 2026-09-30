@@ -13,7 +13,7 @@ function Dashboard() {
                     title="Total Balance"
                     value="₱125,000"
                 />
-
+                
                 <SummaryCard
                     title="Savings"
                     value="₱80,000"
