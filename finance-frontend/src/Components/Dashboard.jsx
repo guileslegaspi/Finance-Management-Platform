@@ -60,7 +60,11 @@ function Dashboard() {
 
                 <SummaryCard
                     title="Savings"
-                    value="₱0"
+                    value={
+                        loading
+                            ? "Loading..."
+                            : `₱${totalBalance.toLocaleString()}`
+                    }
                 />
 
                 <SummaryCard

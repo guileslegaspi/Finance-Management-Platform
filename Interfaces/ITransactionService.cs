@@ -5,13 +5,13 @@ namespace Finance_Management_Platform.Interfaces
 {
 	public interface ITransactionService
 	{
-		Task<Transaction> CreateTransactionAsync(CreateTransactionDto dto, int userId);
+		Task<TransactionDto> CreateTransactionAsync(CreateTransactionDto dto, int userId);
 
-		Task<Transaction?> GetTransactionAsync(int id, int userId);
+		Task<TransactionDto?> GetTransactionAsync(int id, int userId);
 
-		Task<List<Transaction>> GetTransactionsAsync(int userId);
+		Task<List<TransactionDto>> GetTransactionsAsync(int userId);
 
-		Task<Transaction?> UpdateTransactionAsync(int id, UpdateTransactionDto dto, int userId);
+		Task<TransactionDto?> UpdateTransactionAsync(int id, UpdateTransactionDto dto, int userId);
 
 		Task<bool> DeleteTransactionAsync(int id, int userId);
 	}

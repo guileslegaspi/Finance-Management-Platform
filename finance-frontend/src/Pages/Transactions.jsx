@@ -1,6 +1,7 @@
 ﻿import { useEffect, useState } from 'react';
 import '../styles/Transactions.css';
 import TransactionModal from '../Components/TransactionsModal';
+import DeleteConfirmationModal from '../Components/DeleteConfirmationModal';
 
 const API_URL = 'https://localhost:7012/api/Transactions';
 const ACCOUNTS_URL = 'https://localhost:7012/api/Accounts';
@@ -12,6 +13,7 @@ export default function Transactions() {
     const [selectedTransaction, setSelectedTransaction] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [transactionToDelete, setTransactionToDelete] = useState(null);
 
     useEffect(() => {
         async function fetchTransactions() {
@@ -160,14 +162,6 @@ export default function Transactions() {
     }
 
     async function deleteTransaction(id) {
-        const confirmed = window.confirm(
-            'Are you sure you want to delete this transaction?'
-        );
-
-        if (!confirmed) {
-            return;
-        }
-
         try {
             setError('');
 
@@ -182,24 +176,20 @@ export default function Transactions() {
                 const errorText = await response.text();
 
                 console.error(
-                    'Failed to delete transaction:',
-                    response.status,
-                    errorText
+                    'Failed to delete transaction', response.status, errorText
                 );
 
-                setError('Unable to delete transaction.');
+                setError('Unable to delete transaction');
 
                 return;
             }
 
-            setTransactions(prevTransactions =>
-                prevTransactions.filter(
-                    transaction => transaction.id !== id
-                )
-            );
+            setTransactions(prevTransactions => prevTransactions.filter(transaction => transaction.id !== id));
+            setTransactionToDelete(null);
+
         } catch (error) {
             console.error('Error deleting transaction:', error);
-            setError('Something went wrong while deleting the transaction.');
+            setError('Something went wrong while deleting the transaction');
         }
     }
 
@@ -257,9 +247,7 @@ export default function Transactions() {
                                     </td>
 
                                     <td>
-                                        {transaction.type === 0
-                                            ? 'Expense'
-                                            : 'Income'}
+                                        {transaction.type === 0 ? 'Income' : transaction.type === 1 ? 'Expense' : 'Transfer'}
                                     </td>
 
                                     <td>
@@ -278,7 +266,7 @@ export default function Transactions() {
                                     </td>
 
                                     <td>
-                                        {transaction.account?.name ?? 'N/A'}
+                                        {transaction.accountName || 'N/A'}
                                     </td>
 
                                     <td>
@@ -304,7 +292,7 @@ export default function Transactions() {
                                             <button
                                                 className="danger-button"
                                                 onClick={() =>
-                                                    deleteTransaction(transaction.id)
+                                                    setTransactionToDelete(transaction)
                                                 }
                                             >
                                                 Delete
@@ -327,6 +315,14 @@ export default function Transactions() {
                     onClose={closeModal}
                     onEdit={openEditModal}
                     onSave={handleSave}
+                />
+            )}
+            {transactionToDelete && (
+                <DeleteConfirmationModal
+                    title="Delete Transaction?"
+                    message="Are you sure you want to delete this transaction?"
+                    onClose={() => setTransactionToDelete(null)}
+                    onConfirm={() => deleteTransaction(transactionToDelete.id)}
                 />
             )}
         </div>

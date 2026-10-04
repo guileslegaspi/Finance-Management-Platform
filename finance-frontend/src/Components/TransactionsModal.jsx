@@ -75,8 +75,9 @@ function TransactionModal({
                             disabled={isViewMode}
                             required
                         >
-                            <option value={0}>Expense</option>
-                            <option value={1}>Income</option>
+                            <option value={0}>Income</option>
+                            <option value={1}>Expense</option>
+                            <option value={2}>Transfer</option>
                         </select>
                     </div>
 

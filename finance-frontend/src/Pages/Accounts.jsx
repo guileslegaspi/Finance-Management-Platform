@@ -1,6 +1,7 @@
 ﻿import { useEffect, useState } from "react";
 import AccountModal from "../Components/AccountModal";
 import "../styles/Accounts.css";
+import DeleteConfirmationModal from "../Components/DeleteConfirmationModal";
 
 function Accounts() {
     const [accounts, setAccounts] = useState([]);
@@ -9,6 +10,7 @@ function Accounts() {
     const [refreshKey, setRefreshKey] = useState(0);
     const [openMenuId, setOpenMenuId] = useState(null);
     const [selectedAccount, setSelectedAccount] = useState(null);
+    const [accountTodelete, setAccountToDelete] = useState(null);
 
     const accountTypeLabels = {
         0: "Cash",
@@ -55,14 +57,6 @@ function Accounts() {
     };
 
     const handleDelete = async (id) => {
-        const confirmed = window.confirm(
-            "Are you sure you want to delete this account?"
-        );
-
-        if (!confirmed) {
-            return;
-        }
-
         try {
             const token = localStorage.getItem("token");
 
@@ -77,11 +71,12 @@ function Accounts() {
             );
 
             if (!response.ok) {
-                throw new Error("Failed to delete account.");
+                throw new Error("Failed to delete account");
             }
 
             setRefreshKey((value) => value + 1);
             setOpenMenuId(null);
+            setAccountToDelete(null);
         } catch (error) {
             console.error(error);
         }
@@ -156,7 +151,7 @@ function Accounts() {
                                         <button
                                             type="button"
                                             onClick={() =>
-                                                handleDelete(account.id)
+                                                setAccountToDelete(account)
                                             }
                                         >
                                             Delete
@@ -195,6 +190,14 @@ function Accounts() {
                         setSelectedAccount(null);
                         setRefreshKey((value) => value + 1);
                     }}
+                />
+            )}
+            {accountTodelete && (
+                <DeleteConfirmationModal
+                    title="Delete Account?"
+                    message={`Are you sure you want to delete "${accountTodelete.name}"`}
+                    onClose={() => setAccountToDelete(null)}
+                    onConfirm={() => handleDelete(accountTodelete.id)}
                 />
             )}
         </div>

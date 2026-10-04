@@ -16,23 +16,54 @@ namespace Finance_Management_Platform.Services
 			_context = context;
 		}
 
-		public async Task<List<Transaction>> GetTransactionsAsync (int userId) 
+		public async Task<List<TransactionDto>> GetTransactionsAsync (int userId) 
 		{
 			return await _context.Transactions
 				.Where(x => x.UserId == userId)
+				.Select(x => new TransactionDto
+				{
+					Id = x.Id,
+					Date = x.Date,
+					Type = x.Type,
+					Payee = x.Payee,
+					Description = x.Description,
+					Amount = x.Amount,
+					AccountId = x.AccountId,
+					AccountName = x.Account.Name,
+					ReferenceNumber = x.ReferenceNumber,
+					Notes = x.Notes,
+					CreatedAt = x.CreatedAt,
+					UpdatedAt = x.UpdatedAt
+				})
 				.ToListAsync();
 		}
 
-		public async Task<Transaction?> GetTransactionAsync(int id, int userId)
+		public async Task<TransactionDto?> GetTransactionAsync(int id, int userId)
 		{
 			return await _context.Transactions
-				.FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
+				.Where(x => x.Id == id && x.UserId == userId)
+				.Select(x => new TransactionDto 
+				{
+					Id = x.Id,
+					Date = x.Date,
+					Type = x.Type,
+					Payee = x.Payee,
+					Description = x.Description,
+					Amount = x.Amount,
+					AccountId = x.AccountId,
+					AccountName = x.Account.Name,
+					ReferenceNumber = x.ReferenceNumber,
+					Notes = x.Notes,
+					CreatedAt = x.CreatedAt,
+					UpdatedAt = x.UpdatedAt
+				})
+				.FirstOrDefaultAsync();
+			
 		}
 
-		public async Task<Transaction> CreateTransactionAsync(CreateTransactionDto dto, int userId)
+		public async Task<TransactionDto> CreateTransactionAsync(CreateTransactionDto dto, int userId)
 		{
-			var account = await _context.Accounts
-				.FirstOrDefaultAsync(x => x.Id == dto.AccountId && x.UserId == userId);
+			var account = await _context.Accounts.FirstOrDefaultAsync(x => x.Id == dto.AccountId && x.UserId == userId);
 
 			if (account == null)
 			{
@@ -41,7 +72,7 @@ namespace Finance_Management_Platform.Services
 
 			var transaction = new Transaction
 			{
-				Date = dto.Date,
+				Date = DateTime.SpecifyKind(dto.Date, DateTimeKind.Utc),
 				Type = dto.Type,
 				Payee = dto.Payee,
 				Description = dto.Description,
@@ -65,13 +96,26 @@ namespace Finance_Management_Platform.Services
 
 			await _context.SaveChangesAsync();
 
-			return transaction;
+			return new TransactionDto
+			{
+				Id = transaction.Id,
+				Date = transaction.Date,
+				Type = transaction.Type,
+				Payee = transaction.Payee,
+				Description = transaction.Description,
+				Amount = transaction.Amount,
+				AccountId = transaction.AccountId,
+				AccountName = account.Name,
+				ReferenceNumber = transaction.ReferenceNumber,
+				Notes = transaction.Notes,
+				CreatedAt = transaction.CreatedAt,
+				UpdatedAt = transaction.UpdatedAt
+			};
 		}
 
-		public async Task<Transaction?> UpdateTransactionAsync(int id, UpdateTransactionDto dto, int userId)
+		public async Task<TransactionDto?> UpdateTransactionAsync(int id, UpdateTransactionDto dto, int userId)
 		{
-			var transaction = await _context.Transactions
-				.FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
+			var transaction = await _context.Transactions.FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
 
 			if (transaction == null)
 			{
@@ -100,7 +144,7 @@ namespace Finance_Management_Platform.Services
 			}
 
 			
-			transaction.Date = dto.Date;
+			transaction.Date = DateTime.SpecifyKind(dto.Date, DateTimeKind.Utc);
 			transaction.Type = dto.Type;
 			transaction.Payee = dto.Payee;
 			transaction.Description = dto.Description;
@@ -122,21 +166,33 @@ namespace Finance_Management_Platform.Services
 
 			await _context.SaveChangesAsync();
 
-			return transaction;
+			return new TransactionDto
+			{
+				Id = transaction.Id,
+				Date = transaction.Date,
+				Type = transaction.Type,
+				Payee = transaction.Payee,
+				Description = transaction.Description,
+				Amount = transaction.Amount,
+				AccountId = transaction.AccountId,
+				AccountName = newAccount.Name,
+				ReferenceNumber = transaction.ReferenceNumber,
+				Notes = transaction.Notes,
+				CreatedAt = transaction.CreatedAt,
+				UpdatedAt = transaction.UpdatedAt
+			};
 		}
 
 		public async Task<bool> DeleteTransactionAsync(int id, int userId)
 		{
-			var transaction = await _context.Transactions
-				.FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
+			var transaction = await _context.Transactions.FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
 
 			if (transaction == null)
 			{
 				return false;
 			}
 
-			var account = await _context.Accounts
-				.FirstOrDefaultAsync(x => x.Id == transaction.AccountId && x.UserId == userId);
+			var account = await _context.Accounts.FirstOrDefaultAsync(x => x.Id == transaction.AccountId && x.UserId == userId);
 
 			if (account == null)
 			{
