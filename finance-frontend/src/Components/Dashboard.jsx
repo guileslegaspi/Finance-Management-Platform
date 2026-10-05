@@ -76,6 +76,13 @@ function Dashboard() {
                     title="Expense"
                     value="₱0"
                 />
+
+                <SummaryCard
+                    title="Expense"
+                    value="₱0"
+                />
+
+
             </div>
 
             <FinancialOverview />
