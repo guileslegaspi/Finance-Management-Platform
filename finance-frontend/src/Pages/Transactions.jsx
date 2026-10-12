@@ -14,6 +14,7 @@ export default function Transactions() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [transactionToDelete, setTransactionToDelete] = useState(null);
+    const [openMenuId, setOpenMenuId] = useState(null);
 
     useEffect(() => {
         async function fetchTransactions() {
@@ -68,16 +69,19 @@ export default function Transactions() {
     }, []);
 
     function openCreateModal() {
+        setOpenMenuId(null);
         setSelectedTransaction(null);
         setModalMode('create');
     }
 
     function openViewModal(transaction) {
+        setOpenMenuId(null);
         setSelectedTransaction(transaction);
         setModalMode('view');
     }
 
     function openEditModal(transaction) {
+        setOpenMenuId(null);
         setSelectedTransaction(transaction);
         setModalMode('edit');
     }
@@ -97,9 +101,7 @@ export default function Transactions() {
                 ? `${API_URL}/${selectedTransaction.id}`
                 : API_URL;
 
-            const method = isEdit
-                ? 'PUT'
-                : 'POST';
+            const method = isEdit ? 'PUT' : 'POST';
 
             const requestBody = {
                 date: formData.date,
@@ -113,7 +115,7 @@ export default function Transactions() {
             };
 
             const response = await fetch(url, {
-                method: method,
+                method,
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -176,20 +178,23 @@ export default function Transactions() {
                 const errorText = await response.text();
 
                 console.error(
-                    'Failed to delete transaction', response.status, errorText
+                    'Failed to delete transaction:',
+                    response.status,
+                    errorText
                 );
 
-                setError('Unable to delete transaction');
-
+                setError('Unable to delete transaction.');
                 return;
             }
 
-            setTransactions(prevTransactions => prevTransactions.filter(transaction => transaction.id !== id));
-            setTransactionToDelete(null);
+            setTransactions(prevTransactions =>
+                prevTransactions.filter(transaction => transaction.id !== id)
+            );
 
+            setTransactionToDelete(null);
         } catch (error) {
             console.error('Error deleting transaction:', error);
-            setError('Something went wrong while deleting the transaction');
+            setError('Something went wrong while deleting the transaction.');
         }
     }
 
@@ -234,7 +239,7 @@ export default function Transactions() {
                                 <th>Description</th>
                                 <th>Amount</th>
                                 <th>Account</th>
-                                <th>Actions</th>
+                                <th className="actions-column">Actions</th>
                             </tr>
                         </thead>
 
@@ -247,16 +252,16 @@ export default function Transactions() {
                                     </td>
 
                                     <td>
-                                        {transaction.type === 0 ? 'Income' : transaction.type === 1 ? 'Expense' : 'Transfer'}
+                                        {transaction.type === 0
+                                            ? 'Income'
+                                            : transaction.type === 1
+                                                ? 'Expense'
+                                                : 'Transfer'}
                                     </td>
 
-                                    <td>
-                                        {transaction.payee}
-                                    </td>
+                                    <td>{transaction.payee}</td>
 
-                                    <td>
-                                        {transaction.description}
-                                    </td>
+                                    <td>{transaction.description}</td>
 
                                     <td>
                                         ₱{Number(transaction.amount)
@@ -265,38 +270,61 @@ export default function Transactions() {
                                             })}
                                     </td>
 
-                                    <td>
-                                        {transaction.accountName || 'N/A'}
-                                    </td>
+                                    <td>{transaction.accountName || 'N/A'}</td>
 
-                                    <td>
-                                        <div className="transaction-actions">
+                                    <td className="actions-column">
+                                        <div className="transaction-menu">
                                             <button
-                                                className="secondary-button"
+                                                type="button"
+                                                className="transaction-menu-trigger"
+                                                aria-label={`Actions for transaction ${transaction.id}`}
+                                                aria-haspopup="true"
+                                                aria-expanded={
+                                                    openMenuId === transaction.id
+                                                }
                                                 onClick={() =>
-                                                    openViewModal(transaction)
+                                                    setOpenMenuId(
+                                                        openMenuId === transaction.id
+                                                            ? null
+                                                            : transaction.id
+                                                    )
                                                 }
                                             >
-                                                View
+                                                ⋮
                                             </button>
 
-                                            <button
-                                                className="secondary-button"
-                                                onClick={() =>
-                                                    openEditModal(transaction)
-                                                }
-                                            >
-                                                Edit
-                                            </button>
+                                            {openMenuId === transaction.id && (
+                                                <div className="transaction-menu-dropdown">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            openViewModal(transaction)
+                                                        }
+                                                    >
+                                                        View
+                                                    </button>
 
-                                            <button
-                                                className="danger-button"
-                                                onClick={() =>
-                                                    setTransactionToDelete(transaction)
-                                                }
-                                            >
-                                                Delete
-                                            </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            openEditModal(transaction)
+                                                        }
+                                                    >
+                                                        Edit
+                                                    </button>
+
+                                                    <button
+                                                        type="button"
+                                                        className="delete-action"
+                                                        onClick={() => {
+                                                            setOpenMenuId(null);
+                                                            setTransactionToDelete(transaction);
+                                                        }}
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </div>
+                                            )}
                                         </div>
                                     </td>
                                 </tr>
@@ -317,6 +345,7 @@ export default function Transactions() {
                     onSave={handleSave}
                 />
             )}
+
             {transactionToDelete && (
                 <DeleteConfirmationModal
                     title="Delete Transaction?"
