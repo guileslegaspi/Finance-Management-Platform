@@ -49,10 +49,9 @@ export default function Transactions() {
     useEffect(() => {
         async function fetchAccounts() {
             try {
-                const response = await fetch(ACCOUNTS_URL, {
+                const response = await apiRequest(ACCOUNTS_URL, {
                     headers: {
-                        Authorization: `Bearer ${localStorage.getItem('token')}`
-                    }
+                                            }
                 });
 
                 if (!response.ok) {
@@ -115,12 +114,11 @@ export default function Transactions() {
                 notes: formData.notes
             };
 
-            const response = await fetch(url, {
+            const response = await apiRequest(url, {
                 method,
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${localStorage.getItem('token')}`
-                },
+                                    },
                 body: JSON.stringify(requestBody)
             });
 
@@ -168,11 +166,10 @@ export default function Transactions() {
         try {
             setError('');
 
-            const response = await fetch(`${API_URL}/${id}`, {
+            const response = await apiRequest(`${API_URL}/${id}`, {
                 method: 'DELETE',
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`
-                }
+                                    }
             });
 
             if (!response.ok) {
