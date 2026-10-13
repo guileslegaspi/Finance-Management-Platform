@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import "../App.css";
 import "../styles/Dashboard.css";
 import ScheduleCalendar from "../components/dashboard/ScheduleCalendar";
+import { apiRequest } from "../api/apiClient";
 
 function Dashboard() {
     const [accounts, setAccounts] = useState([]);
@@ -14,14 +15,7 @@ function Dashboard() {
             try {
                 const token = localStorage.getItem("token");
 
-                const response = await fetch(
-                    "https://localhost:7012/api/Accounts",
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
-                    }
-                );
+                const response = await apiRequest("/Accounts");
 
                 if (!response.ok) {
                     throw new Error("Failed to fetch accounts.");
