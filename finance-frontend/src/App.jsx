@@ -1,11 +1,11 @@
 ﻿import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import './App.css'
-import Login from './Pages/Login'
-import Register from './Pages/Register'
-import Dashboard from './Components/Dashboard'
-import Layout from './Components/Layout'
-import Transactions from './Pages/Transactions'
-import Accounts from "./Pages/Accounts"
+import Login from './pages/Login'
+import Register from './pages/Register'
+import Dashboard from './pages/Dashboard'
+import Layout from './components/layout/Layout'
+import Transactions from './pages/Transactions'
+import Accounts from "./pages/Accounts"
 
 function App() {
     return (
