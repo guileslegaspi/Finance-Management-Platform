@@ -13,8 +13,6 @@ function Dashboard() {
     useEffect(() => {
         async function loadAccounts() {
             try {
-                const token = localStorage.getItem("token");
-
                 const response = await apiRequest("/Accounts");
 
                 if (!response.ok) {
