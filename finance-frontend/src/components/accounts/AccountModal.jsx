@@ -1,5 +1,6 @@
 ﻿import { useState } from "react";
 import "../../styles/AccountModal.css";
+import { apiRequest } from "../../api/apiClient";
 
 function AccountModal({ account, onClose, onAccountSaved }) {
     const [name, setName] = useState(account?.name ?? "");
@@ -16,21 +17,16 @@ function AccountModal({ account, onClose, onAccountSaved }) {
         event.preventDefault();
 
         try {
-            const token = localStorage.getItem("token");
-
             const isEditing = Boolean(account);
 
-            const url = isEditing
-                ? `https://localhost:7012/api/Accounts/${account.id}`
-                : "https://localhost:7012/api/Accounts";
+            const url = isEditing ? `/Accounts/${account.id}` : "/Accounts";
 
             const method = isEditing ? "PUT" : "POST";
 
-            const response = await fetch(url, {
+            const response = await apiRequest(url, {
                 method: method,
                 headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
                     name: name,
