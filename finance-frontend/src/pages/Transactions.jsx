@@ -2,9 +2,10 @@
 import '../styles/Transactions.css';
 import TransactionModal from '../components/transactions/TransactionsModal';
 import DeleteConfirmationModal from '../components/shared/DeleteConfirmationModal';
+import { apiRequest } from '../api/apiClient';
 
-const API_URL = 'https://localhost:7012/api/Transactions';
-const ACCOUNTS_URL = 'https://localhost:7012/api/Accounts';
+const API_URL = '/Transactions';
+const ACCOUNTS_URL = '/Accounts';
 
 export default function Transactions() {
     const [transactions, setTransactions] = useState([]);
@@ -22,9 +23,9 @@ export default function Transactions() {
                 setLoading(true);
                 setError('');
 
-                const response = await fetch(API_URL, {
+                const response = await apiRequest(API_URL, {
                     headers: {
-                        Authorization: `Bearer ${localStorage.getItem('token')}`
+                        
                     }
                 });
 
