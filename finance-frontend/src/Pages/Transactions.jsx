@@ -1,10 +1,11 @@
 ﻿import { useEffect, useState } from 'react';
 import '../styles/Transactions.css';
-import TransactionModal from '../Components/TransactionsModal';
-import DeleteConfirmationModal from '../Components/DeleteConfirmationModal';
+import TransactionModal from '../components/transactions/TransactionsModal';
+import DeleteConfirmationModal from '../components/shared/DeleteConfirmationModal';
+import { apiRequest } from '../api/apiClient';
 
-const API_URL = 'https://localhost:7012/api/Transactions';
-const ACCOUNTS_URL = 'https://localhost:7012/api/Accounts';
+const API_URL = '/Transactions';
+const ACCOUNTS_URL = '/Accounts';
 
 export default function Transactions() {
     const [transactions, setTransactions] = useState([]);
@@ -22,11 +23,7 @@ export default function Transactions() {
                 setLoading(true);
                 setError('');
 
-                const response = await fetch(API_URL, {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem('token')}`
-                    }
-                });
+                const response = await apiRequest(API_URL);
 
                 if (!response.ok) {
                     throw new Error(`Failed to fetch transactions (${response.status})`);
@@ -48,11 +45,7 @@ export default function Transactions() {
     useEffect(() => {
         async function fetchAccounts() {
             try {
-                const response = await fetch(ACCOUNTS_URL, {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem('token')}`
-                    }
-                });
+                const response = await apiRequest(ACCOUNTS_URL);
 
                 if (!response.ok) {
                     throw new Error(`Failed to fetch accounts (${response.status})`);
@@ -114,12 +107,8 @@ export default function Transactions() {
                 notes: formData.notes
             };
 
-            const response = await fetch(url, {
+            const response = await apiRequest(url, {
                 method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${localStorage.getItem('token')}`
-                },
                 body: JSON.stringify(requestBody)
             });
 
@@ -167,11 +156,8 @@ export default function Transactions() {
         try {
             setError('');
 
-            const response = await fetch(`${API_URL}/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`
-                }
+            const response = await apiRequest(`${API_URL}/${id}`, {
+                method: 'DELETE'
             });
 
             if (!response.ok) {
