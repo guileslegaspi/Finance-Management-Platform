@@ -23,11 +23,7 @@ export default function Transactions() {
                 setLoading(true);
                 setError('');
 
-                const response = await apiRequest(API_URL, {
-                    headers: {
-                        
-                    }
-                });
+                const response = await apiRequest(API_URL);
 
                 if (!response.ok) {
                     throw new Error(`Failed to fetch transactions (${response.status})`);
@@ -49,10 +45,7 @@ export default function Transactions() {
     useEffect(() => {
         async function fetchAccounts() {
             try {
-                const response = await apiRequest(ACCOUNTS_URL, {
-                    headers: {
-                                            }
-                });
+                const response = await apiRequest(ACCOUNTS_URL);
 
                 if (!response.ok) {
                     throw new Error(`Failed to fetch accounts (${response.status})`);
@@ -116,9 +109,6 @@ export default function Transactions() {
 
             const response = await apiRequest(url, {
                 method,
-                headers: {
-                    'Content-Type': 'application/json',
-                                    },
                 body: JSON.stringify(requestBody)
             });
 
@@ -167,9 +157,7 @@ export default function Transactions() {
             setError('');
 
             const response = await apiRequest(`${API_URL}/${id}`, {
-                method: 'DELETE',
-                headers: {
-                                    }
+                method: 'DELETE'
             });
 
             if (!response.ok) {
