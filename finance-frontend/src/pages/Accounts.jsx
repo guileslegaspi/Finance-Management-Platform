@@ -2,6 +2,7 @@
 import AccountModal from "../components/accounts/AccountModal";
 import "../styles/Accounts.css";
 import DeleteConfirmationModal from "../components/shared/DeleteConfirmationModal";
+import { apiRequest } from "../api/apiClient";
 
 function Accounts() {
     const [accounts, setAccounts] = useState([]);
@@ -22,16 +23,7 @@ function Accounts() {
     useEffect(() => {
         async function loadAccounts() {
             try {
-                const token = localStorage.getItem("token");
-
-                const response = await fetch(
-                    "https://localhost:7012/api/Accounts",
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
-                    }
-                );
+                const response = await apiRequest("/Accounts");
 
                 if (!response.ok) {
                     throw new Error("Failed to fetch accounts.");
@@ -58,17 +50,7 @@ function Accounts() {
 
     const handleDelete = async (id) => {
         try {
-            const token = localStorage.getItem("token");
-
-            const response = await fetch(
-                `https://localhost:7012/api/Accounts/${id}`,
-                {
-                    method: "DELETE",
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                }
-            );
+            const response = await apiRequest(`/Accounts/${id}`, { method: "DELETE" });
 
             if (!response.ok) {
                 throw new Error("Failed to delete account");
