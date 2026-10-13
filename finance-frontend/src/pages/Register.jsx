@@ -2,6 +2,7 @@
 import { Link, useNavigate } from 'react-router-dom'
 import Header from '../components/layout/Header'
 import Footer from '../components/layout/Footer'
+import { apiRequest } from '../api/apiClient'
 
 function Register() {
     const [userName, setUserName] = useState('')
@@ -17,7 +18,7 @@ function Register() {
         setErrorMessage('')
 
         try {
-            const response = await fetch('https://localhost:7012/api/Auth/register', {
+            const response = await apiRequest('/Auth/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
