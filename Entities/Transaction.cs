@@ -27,6 +27,10 @@ namespace Finance_Management_Platform.Entities
 
 		public int AccountId { get; set; }
 		public Account Account { get; set; } = null!;
+
+		public int? DestinationAccountId { get; set; }
+		public Account? DestinationAccount { get; set; }
+
 		public int UserId { get; set; }
 		public User User { get; set; } = null!;
 	}
