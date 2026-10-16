@@ -1,4 +1,5 @@
-﻿import { useEffect, useState } from 'react';
+﻿
+import { useEffect, useMemo, useState } from 'react';
 import '../styles/Transactions.css';
 import TransactionModal from '../components/transactions/TransactionsModal';
 import DeleteConfirmationModal from '../components/shared/DeleteConfirmationModal';
@@ -6,6 +7,12 @@ import { apiRequest } from '../api/apiClient';
 
 const API_URL = '/Transactions';
 const ACCOUNTS_URL = '/Accounts';
+
+const TRANSACTION_TYPES = [
+    { value: 0, label: 'Income' },
+    { value: 2, label: 'Transfer' },
+    { value: 1, label: 'Expense' }
+];
 
 export default function Transactions() {
     const [transactions, setTransactions] = useState([]);
@@ -17,6 +24,40 @@ export default function Transactions() {
     const [transactionToDelete, setTransactionToDelete] = useState(null);
     const [openMenuId, setOpenMenuId] = useState(null);
 
+
+    const [sortOrder, setSortOrder] = useState('newest');
+    const [selectedTypes, setSelectedTypes] = useState([0, 1, 2]);
+    const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
+
+   
+    const visibleTransactions = useMemo(() => {
+        return transactions
+            .filter(transaction =>
+                selectedTypes.includes(Number(transaction.type))
+            )
+            .sort((a, b) => {
+                const dateA = new Date(a.date).getTime();
+                const dateB = new Date(b.date).getTime();
+
+                return sortOrder === 'newest'
+                    ? dateB - dateA
+                    : dateA - dateB;
+            });
+    }, [transactions, selectedTypes, sortOrder]);
+
+    function toggleTransactionType(type) {
+        setSelectedTypes(current =>
+            current.includes(type)
+                ? current.filter(item => item !== type)
+                : [...current, type]
+        );
+    }
+
+    function resetSortAndFilters() {
+        setSortOrder('newest');
+        setSelectedTypes([0, 1, 2]);
+    }
+
     useEffect(() => {
         async function fetchTransactions() {
             try {
@@ -26,11 +67,12 @@ export default function Transactions() {
                 const response = await apiRequest(API_URL);
 
                 if (!response.ok) {
-                    throw new Error(`Failed to fetch transactions (${response.status})`);
+                    throw new Error(
+                        `Failed to fetch transactions (${response.status})`
+                    );
                 }
 
-                const data = await response.json();
-                setTransactions(data);
+                setTransactions(await response.json());
             } catch (error) {
                 console.error('Error fetching transactions:', error);
                 setError('Unable to load transactions.');
@@ -48,11 +90,12 @@ export default function Transactions() {
                 const response = await apiRequest(ACCOUNTS_URL);
 
                 if (!response.ok) {
-                    throw new Error(`Failed to fetch accounts (${response.status})`);
+                    throw new Error(
+                        `Failed to fetch accounts (${response.status})`
+                    );
                 }
 
-                const data = await response.json();
-                setAccounts(data);
+                setAccounts(await response.json());
             } catch (error) {
                 console.error('Error fetching accounts:', error);
             }
@@ -89,23 +132,42 @@ export default function Transactions() {
             setError('');
 
             const isEdit = modalMode === 'edit';
+            const isTransfer = Number(formData.type) === 2;
 
-            const url = isEdit
-                ? `${API_URL}/${selectedTransaction.id}`
-                : API_URL;
+            if (isTransfer && isEdit) {
+                setError(
+                    'Editing transfer transactions is not supported yet.'
+                );
+                return;
+            }
+
+            const url = isTransfer
+                ? `${API_URL}/transfer`
+                : isEdit
+                    ? `${API_URL}/${selectedTransaction.id}`
+                    : API_URL;
 
             const method = isEdit ? 'PUT' : 'POST';
 
-            const requestBody = {
-                date: formData.date,
-                type: Number(formData.type),
-                amount: Number(formData.amount),
-                accountId: Number(formData.accountId),
-                payee: formData.payee,
-                description: formData.description,
-                referenceNumber: formData.referenceNumber,
-                notes: formData.notes
-            };
+            const requestBody = isTransfer
+                ? {
+                    date: formData.date,
+                    accountId: Number(formData.accountId),
+                    destinationAccountId: Number(
+                        formData.destinationAccountId
+                    ),
+                    amount: Number(formData.amount)
+                }
+                : {
+                    date: formData.date,
+                    type: Number(formData.type),
+                    amount: Number(formData.amount),
+                    accountId: Number(formData.accountId),
+                    payee: formData.payee,
+                    description: formData.description,
+                    referenceNumber: formData.referenceNumber,
+                    notes: formData.notes
+                };
 
             const response = await apiRequest(url, {
                 method,
@@ -122,33 +184,53 @@ export default function Transactions() {
                 );
 
                 setError(
+                    errorText ||
                     `Unable to ${isEdit ? 'update' : 'create'} transaction.`
                 );
-
                 return;
             }
 
-            const savedTransaction = await response.json();
+            const savedTransaction = response.status === 204
+                ? null
+                : await response.json();
 
-            if (isEdit) {
-                setTransactions(prevTransactions =>
-                    prevTransactions.map(transaction =>
-                        transaction.id === savedTransaction.id
-                            ? savedTransaction
-                            : transaction
-                    )
-                );
-            } else {
-                setTransactions(prevTransactions => [
-                    ...prevTransactions,
-                    savedTransaction
+            if (savedTransaction) {
+                if (isEdit) {
+                    setTransactions(previous =>
+                        previous.map(transaction =>
+                            transaction.id === savedTransaction.id
+                                ? savedTransaction
+                                : transaction
+                        )
+                    );
+                } else {
+                    setTransactions(previous => [
+                        ...previous,
+                        savedTransaction
+                    ]);
+                }
+            }
+
+            const [transactionsResponse, accountsResponse] =
+                await Promise.all([
+                    apiRequest(API_URL),
+                    apiRequest(ACCOUNTS_URL)
                 ]);
+
+            if (transactionsResponse.ok) {
+                setTransactions(await transactionsResponse.json());
+            }
+
+            if (accountsResponse.ok) {
+                setAccounts(await accountsResponse.json());
             }
 
             closeModal();
         } catch (error) {
             console.error('Error saving transaction:', error);
-            setError('Something went wrong while saving the transaction.');
+            setError(
+                'Something went wrong while saving the transaction.'
+            );
         }
     }
 
@@ -173,14 +255,16 @@ export default function Transactions() {
                 return;
             }
 
-            setTransactions(prevTransactions =>
-                prevTransactions.filter(transaction => transaction.id !== id)
+            setTransactions(previous =>
+                previous.filter(transaction => transaction.id !== id)
             );
 
             setTransactionToDelete(null);
         } catch (error) {
             console.error('Error deleting transaction:', error);
-            setError('Something went wrong while deleting the transaction.');
+            setError(
+                'Something went wrong while deleting the transaction.'
+            );
         }
     }
 
@@ -192,18 +276,117 @@ export default function Transactions() {
                     <p>Manage your financial transactions.</p>
                 </div>
 
-                <button
-                    className="primary-button"
-                    onClick={openCreateModal}
-                >
-                    + Add Transaction
-                </button>
+                <div className="transactions-header-actions">
+                    <button
+                        className="primary-button"
+                        onClick={openCreateModal}
+                    >
+                        + Add Transaction
+                    </button>
+
+                    <div className="sort-dropdown">
+                        <button
+                            type="button"
+                            className="sort-dropdown-trigger"
+                            aria-haspopup="true"
+                            aria-expanded={sortDropdownOpen}
+                            onClick={() =>
+                                setSortDropdownOpen(open => !open)
+                            }
+                        >
+                            <span aria-hidden="true">☷</span>
+                            Sort &amp; Filter
+                            <span aria-hidden="true">
+                                {sortDropdownOpen ? '▴' : '▾'}
+                            </span>
+                        </button>
+
+                        {sortDropdownOpen && (
+                            <div className="sort-dropdown-panel">
+                                <div className="sort-section">
+                                    <h3>Sort by date</h3>
+
+                                    <label className="sort-option">
+                                        <input
+                                            type="radio"
+                                            name="transaction-sort"
+                                            value="newest"
+                                            checked={sortOrder === 'newest'}
+                                            onChange={() =>
+                                                setSortOrder('newest')
+                                            }
+                                        />
+                                        Newest first
+                                    </label>
+
+                                    <label className="sort-option">
+                                        <input
+                                            type="radio"
+                                            name="transaction-sort"
+                                            value="oldest"
+                                            checked={sortOrder === 'oldest'}
+                                            onChange={() =>
+                                                setSortOrder('oldest')
+                                            }
+                                        />
+                                        Oldest first
+                                    </label>
+                                </div>
+
+                                <div className="sort-section">
+                                    <h3>Transaction type</h3>
+                                    <p className="sort-hint">
+                                        Select any combination.
+                                    </p>
+
+                                    {TRANSACTION_TYPES.map(type => (
+                                        <label
+                                            className="sort-option"
+                                            key={type.value}
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedTypes.includes(
+                                                    type.value
+                                                )}
+                                                onChange={() =>
+                                                    toggleTransactionType(
+                                                        type.value
+                                                    )
+                                                }
+                                            />
+                                            {type.label}
+                                        </label>
+                                    ))}
+                                </div>
+
+                                <div className="sort-dropdown-footer">
+                                    <button
+                                        type="button"
+                                        className="reset-filters-button"
+                                        onClick={resetSortAndFilters}
+                                    >
+                                        Reset
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        className="apply-filters-button"
+                                        onClick={() =>
+                                            setSortDropdownOpen(false)
+                                        }
+                                    >
+                                        Done
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
             </div>
 
             {error && (
-                <div className="error-message">
-                    {error}
-                </div>
+                <div className="error-message">{error}</div>
             )}
 
             {loading ? (
@@ -213,6 +396,10 @@ export default function Transactions() {
             ) : transactions.length === 0 ? (
                 <div className="empty-message">
                     No transactions found.
+                </div>
+            ) : visibleTransactions.length === 0 ? (
+                <div className="empty-message">
+                    No transactions match your selected filters.
                 </div>
             ) : (
                 <div className="transactions-table-container">
@@ -225,12 +412,14 @@ export default function Transactions() {
                                 <th>Description</th>
                                 <th>Amount</th>
                                 <th>Account</th>
-                                <th className="actions-column">Actions</th>
+                                <th className="actions-column">
+                                    Actions
+                                </th>
                             </tr>
                         </thead>
 
                         <tbody>
-                            {transactions.map(transaction => (
+                            {visibleTransactions.map(transaction => (
                                 <tr key={transaction.id}>
                                     <td>
                                         {new Date(transaction.date)
@@ -238,25 +427,27 @@ export default function Transactions() {
                                     </td>
 
                                     <td>
-                                        {transaction.type === 0
+                                        {Number(transaction.type) === 0
                                             ? 'Income'
-                                            : transaction.type === 1
+                                            : Number(transaction.type) === 1
                                                 ? 'Expense'
                                                 : 'Transfer'}
                                     </td>
 
                                     <td>{transaction.payee}</td>
-
                                     <td>{transaction.description}</td>
 
                                     <td>
-                                        ₱{Number(transaction.amount)
-                                            .toLocaleString('en-PH', {
-                                                minimumFractionDigits: 2
-                                            })}
+                                        ₱{Number(
+                                            transaction.amount
+                                        ).toLocaleString('en-PH', {
+                                            minimumFractionDigits: 2
+                                        })}
                                     </td>
 
-                                    <td>{transaction.accountName || 'N/A'}</td>
+                                    <td>
+                                        {transaction.accountName || 'N/A'}
+                                    </td>
 
                                     <td className="actions-column">
                                         <div className="transaction-menu">
@@ -270,7 +461,8 @@ export default function Transactions() {
                                                 }
                                                 onClick={() =>
                                                     setOpenMenuId(
-                                                        openMenuId === transaction.id
+                                                        openMenuId ===
+                                                            transaction.id
                                                             ? null
                                                             : transaction.id
                                                     )
@@ -284,7 +476,9 @@ export default function Transactions() {
                                                     <button
                                                         type="button"
                                                         onClick={() =>
-                                                            openViewModal(transaction)
+                                                            openViewModal(
+                                                                transaction
+                                                            )
                                                         }
                                                     >
                                                         View
@@ -293,7 +487,9 @@ export default function Transactions() {
                                                     <button
                                                         type="button"
                                                         onClick={() =>
-                                                            openEditModal(transaction)
+                                                            openEditModal(
+                                                                transaction
+                                                            )
                                                         }
                                                     >
                                                         Edit
@@ -304,7 +500,9 @@ export default function Transactions() {
                                                         className="delete-action"
                                                         onClick={() => {
                                                             setOpenMenuId(null);
-                                                            setTransactionToDelete(transaction);
+                                                            setTransactionToDelete(
+                                                                transaction
+                                                            );
                                                         }}
                                                     >
                                                         Delete
@@ -337,7 +535,9 @@ export default function Transactions() {
                     title="Delete Transaction?"
                     message="Are you sure you want to delete this transaction?"
                     onClose={() => setTransactionToDelete(null)}
-                    onConfirm={() => deleteTransaction(transactionToDelete.id)}
+                    onConfirm={() =>
+                        deleteTransaction(transactionToDelete.id)
+                    }
                 />
             )}
         </div>
