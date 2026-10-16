@@ -18,18 +18,28 @@ function TransactionModal({
         type: transaction?.type ?? 0,
         amount: transaction?.amount ?? '',
         accountId: transaction?.accountId ?? '',
+        destinationAccountId: transaction?.destinationAccountId ?? '',
         payee: transaction?.payee ?? '',
         description: transaction?.description ?? '',
         referenceNumber: transaction?.referenceNumber ?? '',
         notes: transaction?.notes ?? ''
     });
 
+    const isTransfer = Number(formData.type) === 2;
+
+    const destinationAccounts = accounts.filter(
+        account => String(account.id) !== String(formData.accountId)
+    );
+
     function handleChanges(e) {
         const { name, value } = e.target;
 
         setFormData(prevFormData => ({
             ...prevFormData,
-            [name]: value
+            [name]: value,
+            ...(name === 'accountId' && String(value) === String(prevFormData.destinationAccountId)
+                ? { destinationAccountId: '' }
+                : {})
         }));
     }
 
@@ -48,7 +58,7 @@ function TransactionModal({
                         {isViewMode && 'Transaction Details'}
                     </h2>
 
-                    <button className="close-button" onClick={onClose}>
+                    <button type="button" className="close-button" onClick={onClose}>
                         ×
                     </button>
                 </div>
@@ -72,7 +82,7 @@ function TransactionModal({
                             name="type"
                             value={formData.type}
                             onChange={handleChanges}
-                            disabled={isViewMode}
+                            disabled={isViewMode || isEditMode}
                             required
                         >
                             <option value={0}>Income</option>
@@ -82,21 +92,7 @@ function TransactionModal({
                     </div>
 
                     <div className="form-group">
-                        <label>Amount</label>
-                        <input
-                            type="number"
-                            name="amount"
-                            step="0.01"
-                            min="0"
-                            value={formData.amount}
-                            onChange={handleChanges}
-                            disabled={isViewMode}
-                            required
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label>Account</label>
+                        <label>{isTransfer ? 'From Account' : 'Account'}</label>
                         <select
                             name="accountId"
                             value={formData.accountId}
@@ -114,48 +110,87 @@ function TransactionModal({
                         </select>
                     </div>
 
+                    {isTransfer && (
+                        <div className="form-group">
+                            <label>To Account</label>
+                            <select
+                                name="destinationAccountId"
+                                value={formData.destinationAccountId}
+                                onChange={handleChanges}
+                                disabled={isViewMode}
+                                required
+                            >
+                                <option value="">Select destination account</option>
+
+                                {destinationAccounts.map(account => (
+                                    <option key={account.id} value={account.id}>
+                                        {account.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
+
                     <div className="form-group">
-                        <label>Payee</label>
+                        <label>Amount</label>
                         <input
-                            type="text"
-                            name="payee"
-                            value={formData.payee}
+                            type="number"
+                            name="amount"
+                            step="0.01"
+                            min="0.01"
+                            value={formData.amount}
                             onChange={handleChanges}
                             disabled={isViewMode}
+                            required
                         />
                     </div>
 
-                    <div className="form-group">
-                        <label>Description</label>
-                        <input
-                            type="text"
-                            name="description"
-                            value={formData.description}
-                            onChange={handleChanges}
-                            disabled={isViewMode}
-                        />
-                    </div>
+                    {!isTransfer && (
+                        <>
+                            <div className="form-group">
+                                <label>Payee</label>
+                                <input
+                                    type="text"
+                                    name="payee"
+                                    value={formData.payee}
+                                    onChange={handleChanges}
+                                    disabled={isViewMode}
+                                />
+                            </div>
 
-                    <div className="form-group">
-                        <label>Reference Number</label>
-                        <input
-                            type="text"
-                            name="referenceNumber"
-                            value={formData.referenceNumber}
-                            onChange={handleChanges}
-                            disabled={isViewMode}
-                        />
-                    </div>
+                            <div className="form-group">
+                                <label>Description</label>
+                                <input
+                                    type="text"
+                                    name="description"
+                                    value={formData.description}
+                                    onChange={handleChanges}
+                                    disabled={isViewMode}
+                                />
+                            </div>
 
-                    <div className="form-group">
-                        <label>Notes</label>
-                        <textarea
-                            name="notes"
-                            value={formData.notes}
-                            onChange={handleChanges}
-                            disabled={isViewMode}
-                        />
-                    </div>
+                            <div className="form-group">
+                                <label>Reference Number</label>
+                                <input
+                                    type="text"
+                                    name="referenceNumber"
+                                    value={formData.referenceNumber}
+                                    onChange={handleChanges}
+                                    disabled={isViewMode}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label>Notes</label>
+                                <textarea
+                                    name="notes"
+                                    value={formData.notes}
+                                    onChange={handleChanges}
+                                    disabled={isViewMode}
+                                />
+                            </div>
+                        </>
+                    )}
 
                     <div className="modal-footer">
                         <button
@@ -177,10 +212,7 @@ function TransactionModal({
                         )}
 
                         {!isViewMode && (
-                            <button
-                                type="submit"
-                                className="primary-button"
-                            >
+                            <button type="submit" className="primary-button">
                                 {isEditMode ? 'Save Changes' : 'Create Transaction'}
                             </button>
                         )}
