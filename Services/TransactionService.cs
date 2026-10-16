@@ -2,6 +2,7 @@
 using Finance_Management_Platform.DTO;
 using Finance_Management_Platform.Entities;
 using Finance_Management_Platform.Interfaces;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -214,6 +215,90 @@ namespace Finance_Management_Platform.Services
 			await _context.SaveChangesAsync();
 
 			return true;
+		}
+
+		public async Task<TransactionDto> CreateTransferAsync(
+	CreateTransferDTO dto, int userId)
+		{
+			if (dto.AccountId == dto.DestinationAccountId)
+			{
+				throw new InvalidOperationException(
+					"Source and destination accounts must be different.");
+			}
+
+			if (dto.Amount <= 0)
+			{
+				throw new InvalidOperationException(
+					"Transfer amount must be greater than zero.");
+			}
+
+			var sourceAccount = await _context.Accounts
+				.FirstOrDefaultAsync(x =>
+					x.Id == dto.AccountId && x.UserId == userId);
+
+			if (sourceAccount == null)
+			{
+				throw new InvalidOperationException(
+					"Source account not found.");
+			}
+
+			var destinationAccount = await _context.Accounts
+				.FirstOrDefaultAsync(x =>
+					x.Id == dto.DestinationAccountId &&
+					x.UserId == userId);
+
+			if (destinationAccount == null)
+			{
+				throw new InvalidOperationException(
+					"Destination account not found.");
+			}
+
+			if (sourceAccount.Balance < dto.Amount)
+			{
+				throw new InvalidOperationException(
+					"Insufficient funds in source account.");
+			}
+
+			await using var dbTransaction =
+				await _context.Database.BeginTransactionAsync();
+
+			sourceAccount.Balance -= dto.Amount;
+			destinationAccount.Balance += dto.Amount;
+
+			var transaction = new Transaction
+			{
+				Date = DateTime.SpecifyKind(
+					dto.Date, DateTimeKind.Utc),
+				Type = TransactionType.Transfer,
+				Payee = destinationAccount.Name,
+				Description =
+					$"Transfer from {sourceAccount.Name} to {destinationAccount.Name}",
+				Amount = dto.Amount,
+				AccountId = sourceAccount.Id,
+				DestinationAccountId = destinationAccount.Id,
+				UserId = userId
+			};
+
+			_context.Transactions.Add(transaction);
+
+			await _context.SaveChangesAsync();
+			await dbTransaction.CommitAsync();
+
+			return new TransactionDto
+			{
+				Id = transaction.Id,
+				Date = transaction.Date,
+				Type = transaction.Type,
+				Payee = transaction.Payee,
+				Description = transaction.Description,
+				Amount = transaction.Amount,
+				AccountId = transaction.AccountId,
+				AccountName = sourceAccount.Name,
+				ReferenceNumber = transaction.ReferenceNumber,
+				Notes = transaction.Notes,
+				CreatedAt = transaction.CreatedAt,
+				UpdatedAt = transaction.UpdatedAt
+			};
 		}
 
 	}

@@ -22,7 +22,7 @@ namespace Finance_Management_Platform.Data
 
 			modelBuilder.Entity<Transaction>()
 				.HasOne(t => t.Account)
-				.WithMany()
+				.WithMany(a => a.Transactions)
 				.HasForeignKey(t => t.AccountId)
 				.OnDelete(DeleteBehavior.Restrict);
 

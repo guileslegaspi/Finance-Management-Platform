@@ -74,6 +74,9 @@ namespace Finance_Management_Platform.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int?>("DestinationAccountId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Notes")
                         .HasColumnType("text");
 
@@ -96,6 +99,8 @@ namespace Finance_Management_Platform.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AccountId");
+
+                    b.HasIndex("DestinationAccountId");
 
                     b.HasIndex("UserId");
 
@@ -144,8 +149,13 @@ namespace Finance_Management_Platform.Migrations
                     b.HasOne("Finance_Management_Platform.Entities.Account", "Account")
                         .WithMany("Transactions")
                         .HasForeignKey("AccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Finance_Management_Platform.Entities.Account", "DestinationAccount")
+                        .WithMany()
+                        .HasForeignKey("DestinationAccountId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Finance_Management_Platform.Entities.User", "User")
                         .WithMany("Transactions")
@@ -154,6 +164,8 @@ namespace Finance_Management_Platform.Migrations
                         .IsRequired();
 
                     b.Navigation("Account");
+
+                    b.Navigation("DestinationAccount");
 
                     b.Navigation("User");
                 });

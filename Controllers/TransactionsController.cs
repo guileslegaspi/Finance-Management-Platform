@@ -78,10 +78,40 @@ namespace Finance_Management_Platform.Controllers
 			}
 		}
 
+		[HttpPost("transfer")]
+		public async Task<IActionResult> CreateTransfer(CreateTransferDTO dto) 
+		{
+			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+			
+			if (!int.TryParse(userId, out int currentUserId))
+			{
+				return Unauthorized();
+			}
+
+			try
+			{
+				var transaction = await _transactionService
+					.CreateTransferAsync(dto, currentUserId);
+
+				return Ok(transaction);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(new { message = ex.Message });
+			}
+			catch (ArgumentException ex)
+			{
+				return BadRequest(new { message = ex.Message });
+			}
+			catch (InvalidOperationException ex)
+			{
+				return BadRequest(new { message = ex.Message });
+			}
+		}
+
+
 		[HttpPut("{id}")]
-		public async Task<IActionResult> UpdateTransaction(
-			int id,
-			UpdateTransactionDto dto)
+		public async Task<IActionResult> UpdateTransaction(int id, UpdateTransactionDto dto)
 		{
 			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
