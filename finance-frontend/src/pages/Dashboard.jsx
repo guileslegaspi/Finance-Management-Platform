@@ -4,11 +4,13 @@ import "../App.css";
 import "../styles/Dashboard.css";
 import ScheduleCalendar from "../components/dashboard/ScheduleCalendar";
 import { apiRequest } from "../api/apiClient";
+import RecentTransactionPanel from "../components/dashboard/RecentTransactionPanel";
 
 function Dashboard() {
     const [accounts, setAccounts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [savingsGoal, setSavingsGoal] = useState(50000);
+    
 
     useEffect(() => {
         async function loadAccounts() {
@@ -30,6 +32,8 @@ function Dashboard() {
         loadAccounts();
     }, []);
 
+   
+
     const totalBalance = accounts.reduce(
         (total, account) => total + Number(account.balance || 0),
         0
@@ -48,7 +52,7 @@ function Dashboard() {
                     <h1>Finance Management</h1>
                     <p>Your money, organized in one place.</p>
                 </div>
-
+                s
                 <div className="dashboard-balance">
                     <span>Total Balance</span>
                     <strong>
@@ -64,20 +68,7 @@ function Dashboard() {
 
             <section className="dashboard-grid">
                 <article className="dashboard-panel">
-                    <div className="panel-heading">
-                        <div>
-                            <span className="panel-number"></span>
-                            <h2>Recent Transactions</h2>
-                        </div>
-                    </div>
-
-                    <div className="panel-empty">
-                        <span className="panel-icon">↕</span>
-                        <strong>Transaction activity</strong>
-                        <p>
-                            testingggg
-                        </p>
-                    </div>
+                    <RecentTransactionPanel/>
                 </article>
 
                 <article className="dashboard-panel">
