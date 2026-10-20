@@ -151,5 +151,21 @@ namespace Finance_Management_Platform.Controllers
 
 			return NoContent();
 		}
+
+		[HttpGet("recent")]
+		public async Task<IActionResult> GetRecentTransactions() 
+		{
+			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+			if (!int.TryParse(userId, out int currentUserId))
+			{
+				return Unauthorized();
+			}
+
+			var transactions = await _transactionService
+				.GetRecentTransactionsAsync(currentUserId);
+
+			return Ok(transactions);
+		}
 	}
 }

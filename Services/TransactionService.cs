@@ -217,8 +217,7 @@ namespace Finance_Management_Platform.Services
 			return true;
 		}
 
-		public async Task<TransactionDto> CreateTransferAsync(
-	CreateTransferDTO dto, int userId)
+		public async Task<TransactionDto> CreateTransferAsync(CreateTransferDTO dto, int userId)
 		{
 			if (dto.AccountId == dto.DestinationAccountId)
 			{
@@ -299,6 +298,24 @@ namespace Finance_Management_Platform.Services
 				CreatedAt = transaction.CreatedAt,
 				UpdatedAt = transaction.UpdatedAt
 			};
+		}
+
+		public async Task<List<TransactionDto>> GetRecentTransactionsAsync(int userId) 
+		{
+			return await _context.Transactions
+				.Where(t => t.UserId == userId)
+				.OrderByDescending(t => t.Date)
+				.ThenByDescending(t => t.Id)
+				.Take(10)
+				.Select(t => new TransactionDto
+				{
+					Id = t.Id,
+					Date = t.Date,
+					Type = t.Type,
+					Payee = t.Payee,
+					Amount = t.Amount,
+				})
+				.ToListAsync();
 		}
 
 	}

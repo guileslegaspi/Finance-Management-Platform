@@ -16,5 +16,7 @@ namespace Finance_Management_Platform.Interfaces
 		Task<bool> DeleteTransactionAsync(int id, int userId);
 
 		Task<TransactionDto> CreateTransferAsync(CreateTransferDTO dto, int userId);
+
+		Task<List<TransactionDto>> GetRecentTransactionsAsync(int userId);
 	}
 }
