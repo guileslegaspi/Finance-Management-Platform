@@ -101,3 +101,17 @@
         font-size: 0.8rem;
     }
 }
+
+.transaction-transfer {
+    background: #f0ecff;
+    color: #7656d6;
+}
+
+.transaction-unknown {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+.transaction-amount-transfer {
+    color: var(--text-color, #4b4659);
+}

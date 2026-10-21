@@ -1,6 +1,20 @@
-﻿import { useEffect, useState } from "react";
+﻿
+import { useEffect, useState } from "react";
 import { apiRequest } from "../../api/apiClient";
 import "../../styles/RecentTransactionPanel.css";
+
+const transactionTypes = {
+    0: "Income",
+    1: "Expense",
+    2: "Transfer",
+    income: "Income",
+    expense: "Expense",
+    transfer: "Transfer"
+};
+
+function getTransactionType(type) {
+    return transactionTypes[String(type).toLowerCase()] ?? "Unknown";
+}
 
 function RecentTransactionPanel() {
     const [transactions, setTransactions] = useState([]);
@@ -53,37 +67,60 @@ function RecentTransactionPanel() {
                 </div>
             ) : (
                 <ul className="recent-transactions-list">
-                    {transactions.map(transaction => (
-                        <li className="recent-transaction" key={transaction.id}>
-                            <div className={`transaction-icon transaction-${String(transaction.type).toLowerCase()}`}>
-                                {transaction.type === "Income"
-                                    ? "↓"
-                                    : transaction.type === "Expense"
-                                        ? "↑"
-                                        : "↔"}
-                            </div>
+                    {transactions.map(transaction => {
+                        const type = getTransactionType(transaction.type);
+                        const typeClass = type.toLowerCase();
 
-                            <div className="transaction-details">
-                                <strong>{transaction.payee || transaction.type}</strong>
-                                <span>
-                                    {transaction.type} ·{" "}
-                                    {new Date(transaction.date).toLocaleDateString("en-PH", {
-                                        month: "short",
-                                        day: "numeric",
-                                        year: "numeric"
-                                    })}
-                                </span>
-                            </div>
+                        const icon =
+                            type === "Income" ? "↑" :
+                                type === "Expense" ? "↓" :
+                                    type === "Transfer" ? "↔" : "?";
 
-                            <strong className={`transaction-amount transaction-amount-${String(transaction.type).toLowerCase()}`}>
-                                {transaction.type === "Income" ? "+" : transaction.type === "Expense" ? "−" : ""}
-                                ₱{Number(transaction.amount).toLocaleString("en-PH", {
-                                    minimumFractionDigits: 2,
-                                    maximumFractionDigits: 2
-                                })}
-                            </strong>
-                        </li>
-                    ))}
+                        return (
+                            <li
+                                className="recent-transaction"
+                                key={transaction.id}
+                            >
+                                <div
+                                    className={`transaction-icon transaction-${typeClass}`}
+                                    aria-label={type}
+                                    title={type}
+                                >
+                                    {icon}
+                                </div>
+
+                                <div className="transaction-details">
+                                    <strong>
+                                        {transaction.payee || type}
+                                    </strong>
+
+                                    <span>
+                                        {type} ·{" "}
+                                        {new Date(transaction.date)
+                                            .toLocaleDateString("en-PH", {
+                                                month: "short",
+                                                day: "numeric",
+                                                year: "numeric"
+                                            })}
+                                    </span>
+                                </div>
+
+                                <strong
+                                    className={`transaction-amount transaction-amount-${typeClass}`}
+                                >
+                                    {type === "Income" ? "+" :
+                                        type === "Expense" ? "−" : ""}
+                                    ₱{Number(transaction.amount).toLocaleString(
+                                        "en-PH",
+                                        {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2
+                                        }
+                                    )}
+                                </strong>
+                            </li>
+                        );
+                    })}
                 </ul>
             )}
         </article>

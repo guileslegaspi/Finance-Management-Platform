@@ -52,7 +52,7 @@ function Dashboard() {
                     <h1>Finance Management</h1>
                     <p>Your money, organized in one place.</p>
                 </div>
-                s
+                
                 <div className="dashboard-balance">
                     <span>Total Balance</span>
                     <strong>
