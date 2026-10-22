@@ -130,8 +130,7 @@ function ScheduleCalendar() {
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
         >
-            <header className="schedule-calendar-header">
-                <span className="panel-number">03</span>
+            <header className="schedule-calendar-header">           
 
                 <div className="calendar-view-controls">
                     <button
