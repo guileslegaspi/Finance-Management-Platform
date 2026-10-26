@@ -70,4 +70,11 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+var port = Environment.GetEnvironmentVariable("PORT");
+
+if (!string.IsNullOrWhiteSpace(port))
+{
+	app.Urls.Add($"http://0.0.0.0:{port}");
+}
+
 app.Run();
