@@ -40,7 +40,10 @@ builder.Services.AddCors(options =>
 	options.AddPolicy("ReactPolicy", policy =>
 	{
 		policy
-			.WithOrigins("http://localhost:5173")
+			.WithOrigins(
+				"http://localhost:5173",
+				"https://finance-management-platform-nine.vercel.app"
+			)
 			.AllowAnyHeader()
 			.AllowAnyMethod();
 
